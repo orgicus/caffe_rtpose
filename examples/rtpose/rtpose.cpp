@@ -1085,7 +1085,10 @@ void* processFrame(void *i) {
     int offset = NET_RESOLUTION_WIDTH * NET_RESOLUTION_HEIGHT * 3;
     //bool empty = false;
 
-    Frame frame_batch[BATCH_SIZE];
+    // Frame frame_batch[BATCH_SIZE];
+    std::vector<Frame> frame_batch;
+    std::cout << "allocating " << BATCH_SIZE << " frames" << std::endl;
+    frame_batch.reserve(BATCH_SIZE);
 
     std::vector< std::vector<double>> subset;
     std::vector< std::vector< std::vector<double> > > connection;

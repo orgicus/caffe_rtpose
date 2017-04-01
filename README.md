@@ -15,6 +15,11 @@ chmod u+x install_caffe_and_cpm.sh
 ./install_caffe_and_cpm.sh
 ```
 
+### OSX quirks
+
+1. Double check Makefile.config.OSX.10.11.5.example `CUDA_ARCH` flags and make sure they match the ones your GPU supports. Current flags are set for GeForce 750M
+2. If after compilation you get an ImageIO.frameworkrelated `dyld: Symbol not found: __cg_jpeg_resync_to_restart` error, follow [this thread](http://stackoverflow.com/questions/17643509/conflict-between-dynamic-linking-priority-in-osx)
+
 ## Running on a video:
 ```
 ./build/examples/rtpose/rtpose.bin --video video_file.mp4
