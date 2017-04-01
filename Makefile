@@ -180,6 +180,7 @@ ifneq ($(CPU_ONLY), 1)
 	LIBRARIES := cudart cublas curand
 endif
 
+
 LIBRARIES += glog gflags protobuf boost_system boost_filesystem m hdf5_hl hdf5
 
 # handle IO dependencies
@@ -275,6 +276,8 @@ endif
 # libstdc++ for NVCC compatibility on OS X >= 10.9 with CUDA < 7.0
 ifeq ($(OSX), 1)
 	CXX := /usr/bin/clang++
+	# CXX := /usr/local/opt/llvm/bin/clang++
+	# CXX := /usr/local/Cellar/gcc49/4.9.3/bin/g++-4.9
 	ifneq ($(CPU_ONLY), 1)
 		CUDA_VERSION := $(shell $(CUDA_DIR)/bin/nvcc -V | grep -o 'release [0-9.]*' | tr -d '[a-z ]')
 		ifeq ($(shell echo | awk '{exit $(CUDA_VERSION) < 7.0;}'), 1)
@@ -310,6 +313,8 @@ endif
 
 # Static linking
 ifneq (,$(findstring clang++,$(CXX)))
+# ifneq (,$(findstring /usr/local/opt/llvm/bin/clang++,$(CXX)))
+# ifneq (,$(findstring /usr/local/Cellar/gcc49/4.9.3/bin/g++-4.9,$(CXX)))
 	STATIC_LINK_COMMAND := -Wl,-force_load $(STATIC_NAME)
 else ifneq (,$(findstring g++,$(CXX)))
 	STATIC_LINK_COMMAND := -Wl,--whole-archive $(STATIC_NAME) -Wl,--no-whole-archive
@@ -406,11 +411,15 @@ CXXFLAGS += -MMD -MP -march=native
 
 # Complete build flags.
 COMMON_FLAGS += $(foreach includedir,$(INCLUDE_DIRS),-I$(includedir))
-CXXFLAGS += -pthread -fPIC $(COMMON_FLAGS) $(WARNINGS) -std=c++11 -fopenmp
+CXXFLAGS += -pthread -fPIC $(COMMON_FLAGS) $(WARNINGS) -std=c++11# -fopenmp
+# CXXFLAGS += -fPIC $(COMMON_FLAGS) $(WARNINGS) -std=c++11# -fopenmp
 NVCCFLAGS += -ccbin=$(CXX) -Xcompiler -fPIC $(COMMON_FLAGS)
 # mex may invoke an older gcc that is too liberal with -Wuninitalized
 MATLAB_CXXFLAGS := $(CXXFLAGS) -Wno-uninitialized
-LINKFLAGS += -pthread -fPIC $(COMMON_FLAGS) $(WARNINGS) -fopenmp
+# LINKFLAGS += -fPIC $(COMMON_FLAGS) $(WARNINGS)# -fopenmp
+# LINKFLAGS += -pthread -fPIC $(COMMON_FLAGS) $(WARNINGS)# -fopenmp
+# http://stackoverflow.com/questions/17841140/os-x-clang-pthread clang requires -pthread when compiling but not when linking.
+LINKFLAGS += -fPIC $(COMMON_FLAGS) $(WARNINGS)# -fopenmp
 
 USE_PKG_CONFIG ?= 0
 ifeq ($(USE_PKG_CONFIG), 1)
